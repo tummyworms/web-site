@@ -503,3 +503,44 @@ body {
   outline: 2px solid var(--black);
   outline-offset: 2px;
 }
+
+/* ══════════════════════════════════════
+   MOBILE
+══════════════════════════════════════ */
+@media (max-width: 767px) {
+  html, body { touch-action: none; }
+
+  .mac-window {
+    width: calc(82vw) !important;
+    min-width: 0 !important;
+    max-height: 72vh;
+  }
+
+  .win-scroll {
+    max-height: calc(72vh - 19px);
+  }
+
+  /* Tighter content padding */
+  .win-content { padding: 10px 12px; }
+
+  .win-logo { font-size: 26px; letter-spacing: -1px; }
+  .win-tagline { font-size: 9px; letter-spacing: 2px; }
+  .win-body { font-size: 10px; line-height: 1.6; }
+  .win-heading { font-size: 11px; }
+  .win-service-title, .win-process-title { font-size: 11px; }
+  .win-process-num { font-size: 16px; }
+  .win-spec-row { font-size: 10px; padding: 4px 0; }
+  .win-btn-row { gap: 6px; }
+  .mac-btn { font-size: 10px; padding: 4px 12px; }
+
+  /* Smaller icons */
+  .desk-icon { width: 52px; }
+  .desk-icon .icon-img { width: 34px; height: 34px; }
+  .desk-icon svg { width: 34px !important; height: 34px !important; }
+  .desk-icon span { font-size: 8px; max-width: 52px; }
+
+  /* Menu bar: slightly tighter */
+  .menu-item { padding: 0 7px; font-size: 11px; }
+  .apple-menu { padding: 0 6px; }
+  .menu-right { font-size: 10px; }
+}
