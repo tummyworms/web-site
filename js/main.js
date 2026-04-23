@@ -167,27 +167,27 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
   } else {
-    /* Desktop: scattered across the full screen */
+    /* Desktop: single right column icons */
     const pos = {
-      'icon-about':    { left: 20,                        top: 40  },  // top-left
-      'icon-services': { left: 20,                        top: 130 },  // left, below about
-      'icon-process':  { left: Math.floor(vw * 0.25),    top: 30  },  // center-left
-      'icon-contact':  { left: Math.floor(vw * 0.5) - 36, top: 30  }, // center
-      'icon-hd':       { left: vw - 170,                 top: 20  },  // top-right second col
-      'icon-build':    { left: vw - 90,                  top: 20  },  // top-right
-      'icon-trash':    { left: vw - 90,                  top: vh - 110 }
+      'icon-hd':       { left: vw - 90, top: 40  },
+      'icon-build':    { left: vw - 90, top: 115 },
+      'icon-services': { left: vw - 90, top: 190 },
+      'icon-process':  { left: vw - 90, top: 265 },
+      'icon-contact':  { left: vw - 90, top: 340 },
+      'icon-about':    { left: vw - 90, top: 415 },
+      'icon-trash':    { left: vw - 90, top: vh - 90 }
     };
     Object.entries(pos).forEach(([id, p]) => {
       const el = document.getElementById(id);
       if (el) { el.style.left = p.left + 'px'; el.style.top = p.top + 'px'; }
     });
 
+    /* Desktop: 4-window layout matching screenshot */
     const winPos = {
-      'win-landing':  { left: 30,                          top: 28 },
-      'win-services': { left: Math.floor(vw * 0.42),       top: 28 },
-      'win-build':    { left: 50,                          top: Math.floor(vh * 0.44) },
-      'win-process':  { left: Math.max(20, vw - 460),      top: Math.floor(vh * 0.28) },
-      'win-contact':  { left: Math.floor(vw * 0.32),       top: Math.floor(vh * 0.52) },
+      'win-process': { left: 85,                         top: 108 },
+      'win-landing': { left: Math.floor(vw * 0.355),     top: Math.floor(vh * 0.28) },
+      'win-build':   { left: Math.floor(vw * 0.676),     top: 108 },
+      'win-contact': { left: Math.floor(vw * 0.676),     top: Math.floor(vh * 0.575) },
     };
     Object.entries(winPos).forEach(([id, p]) => {
       const el = document.getElementById(id);
