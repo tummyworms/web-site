@@ -167,27 +167,35 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
   } else {
-    /* Desktop: two columns on the right */
+    /* Desktop: scattered across the full screen */
     const pos = {
-      'icon-hd':       { left: vw - 90,  top: 20  },
-      'icon-about':    { left: vw - 90,  top: 110 },
-      'icon-services': { left: vw - 90,  top: 200 },
-      'icon-build':    { left: vw - 90,  top: 290 },
-      'icon-process':  { left: vw - 170, top: 65  },
-      'icon-contact':  { left: vw - 170, top: 155 },
-      'icon-trash':    { left: vw - 90,  top: vh - 110 }
+      'icon-about':    { left: 20,                        top: 40  },  // top-left
+      'icon-services': { left: 20,                        top: 130 },  // left, below about
+      'icon-process':  { left: Math.floor(vw * 0.25),    top: 30  },  // center-left
+      'icon-contact':  { left: Math.floor(vw * 0.5) - 36, top: 30  }, // center
+      'icon-hd':       { left: vw - 170,                 top: 20  },  // top-right second col
+      'icon-build':    { left: vw - 90,                  top: 20  },  // top-right
+      'icon-trash':    { left: vw - 90,                  top: vh - 110 }
     };
     Object.entries(pos).forEach(([id, p]) => {
       const el = document.getElementById(id);
       if (el) { el.style.left = p.left + 'px'; el.style.top = p.top + 'px'; }
     });
 
+    const winPos = {
+      'win-landing':  { left: 30,                          top: 28 },
+      'win-services': { left: Math.floor(vw * 0.42),       top: 28 },
+      'win-build':    { left: 50,                          top: Math.floor(vh * 0.44) },
+      'win-process':  { left: Math.max(20, vw - 460),      top: Math.floor(vh * 0.28) },
+      'win-contact':  { left: Math.floor(vw * 0.32),       top: Math.floor(vh * 0.52) },
+    };
+    Object.entries(winPos).forEach(([id, p]) => {
+      const el = document.getElementById(id);
+      if (el) { el.style.left = p.left + 'px'; el.style.top = p.top + 'px'; }
+    });
+
     const landing = document.getElementById('win-landing');
-    if (landing) {
-      landing.style.left = Math.max(20, (vw - 560) / 2) + 'px';
-      landing.style.top  = Math.max(20, (vh - 480) / 3) + 'px';
-      bringToFront(landing);
-    }
+    if (landing) bringToFront(landing);
   }
 });
 
