@@ -160,47 +160,37 @@ window.addEventListener('DOMContentLoaded', () => {
   const vh = window.innerHeight - 20;
 
   if (MOBILE) {
-    /* ── MOBILE layout ── */
-    const winW = Math.floor(vw * 0.82);
+    /* ── MOBILE layout — clean desktop, no windows open ── */
+    document.querySelectorAll('.mac-window').forEach(w => w.style.display = 'none');
 
-    // Hide services on entry (only landing + process open)
-    const services = document.getElementById('win-services');
-    if (services) services.style.display = 'none';
-
-    const landing = document.getElementById('win-landing');
-    const process = document.getElementById('win-process');
-
-    if (landing) {
-      landing.style.left  = '8px';
-      landing.style.top   = '8px';
-      landing.style.width = winW + 'px';
-      bringToFront(landing);
-    }
-
-    // Position process below landing after it renders
-    requestAnimationFrame(() => {
-      if (process) {
-        const landingBottom = landing ? landing.offsetTop + landing.offsetHeight : 300;
-        process.style.left  = '8px';
-        process.style.top   = (landingBottom + 12) + 'px';
-        process.style.width = winW + 'px';
-      }
-    });
-
-    // Single icon column on right
+    // Single icon column, centered on screen
+    const col1 = Math.floor(vw / 2) - 58;
+    const col2 = Math.floor(vw / 2) + 6;
     const iconPositions = {
-      'icon-hd':       { left: vw - 66, top: 20  },
-      'icon-about':    { left: vw - 66, top: 96  },
-      'icon-services': { left: vw - 66, top: 172 },
-      'icon-build':    { left: vw - 66, top: 248 },
-      'icon-process':  { left: vw - 66, top: 324 },
-      'icon-contact':  { left: vw - 66, top: 400 },
-      'icon-trash':    { left: vw - 66, top: vh - 80 }
+      'icon-hd':       { left: col1, top: 24  },
+      'icon-about':    { left: col1, top: 110 },
+      'icon-services': { left: col1, top: 196 },
+      'icon-build':    { left: col2, top: 24  },
+      'icon-process':  { left: col2, top: 110 },
+      'icon-contact':  { left: col2, top: 196 },
+      'icon-trash':    { left: Math.floor(vw / 2) - 26, top: vh - 80 }
     };
     Object.entries(iconPositions).forEach(([id, pos]) => {
       const el = document.getElementById(id);
       if (el) { el.style.left = pos.left + 'px'; el.style.top = pos.top + 'px'; }
     });
+
+    // On mobile, open windows full-width when triggered
+    const origOpen = openWindow;
+    window.openWindow = id => {
+      const win = document.getElementById(id);
+      if (win) {
+        win.style.width = Math.floor(vw * 0.92) + 'px';
+        win.style.left  = Math.floor(vw * 0.04) + 'px';
+        win.style.top   = '30px';
+      }
+      origOpen(id);
+    };
 
   } else {
     /* ── DESKTOP layout ── */
