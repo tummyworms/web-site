@@ -155,9 +155,30 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-/* ── MENU BAR — close dropdowns on outside click ── */
-document.addEventListener('click', e => {
-  if (!e.target.closest('.menu-item')) {
-    document.querySelectorAll('.menu-item').forEach(m => m.blur());
-  }
+/* ── MENU BAR DROPDOWNS ── */
+document.querySelectorAll('.menu-item').forEach(item => {
+  item.addEventListener('click', e => {
+    e.stopPropagation();
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+// Dropdown item actions
+document.querySelectorAll('.dropdown-item').forEach(item => {
+  item.addEventListener('click', e => {
+    e.stopPropagation();
+    document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('open'));
+    const action = item.dataset.action;
+    if (action === 'restart') { location.reload(); }
+    else if (action === 'shutdown') { document.body.innerHTML = '<div style="position:fixed;inset:0;background:#fff;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:16px;font-weight:bold;">It is now safe to turn off your computer.</div>'; }
+    else if (action === 'trash') { alert('The Trash is already empty.'); }
+    else if (action) { openWindow(action); }
+  });
+});
+
+// Click outside closes all dropdowns
+document.addEventListener('click', () => {
+  document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('open'));
 });
