@@ -23,6 +23,8 @@
           <div class="dropdown-item" data-action="win-about">About 1of1</div>
           <div class="dropdown-item" data-action="win-build">What We Build</div>
           <div class="dropdown-item" data-action="win-contact">Contact</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" data-action="win-snake">Snake</div>
         </div>
       </span>
       <span class="menu-item">Edit
@@ -206,6 +208,29 @@
         </svg>
       </div>
       <span>Contact</span>
+    </div>
+
+    <div class="desk-icon" id="icon-snake" data-win="win-snake">
+      <div class="icon-img">
+        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+          <!-- Snake body segments (S-curve) -->
+          <rect x="4"  y="28" width="8" height="8" fill="white" stroke="black" stroke-width="2"/>
+          <rect x="12" y="28" width="8" height="8" fill="white" stroke="black" stroke-width="2"/>
+          <rect x="20" y="28" width="8" height="8" fill="white" stroke="black" stroke-width="2"/>
+          <rect x="20" y="20" width="8" height="8" fill="white" stroke="black" stroke-width="2"/>
+          <rect x="20" y="12" width="8" height="8" fill="white" stroke="black" stroke-width="2"/>
+          <!-- Head (filled, facing right) -->
+          <rect x="28" y="12" width="10" height="8" fill="black"/>
+          <!-- Eyes -->
+          <rect x="35" y="14" width="2" height="2" fill="white"/>
+          <rect x="35" y="18" width="2" height="2" fill="white"/>
+          <!-- Food pellet -->
+          <rect x="38" y="8" width="6" height="6" fill="black"/>
+          <rect x="39" y="9" width="4" height="4" fill="white"/>
+          <rect x="40" y="10" width="2" height="2" fill="black"/>
+        </svg>
+      </div>
+      <span>Snake</span>
     </div>
 
     <div class="desk-icon" id="icon-trash" data-win="">
@@ -414,6 +439,23 @@
             <a href="mailto:cloalbo00@gmail.com" class="mac-btn mac-btn-default">Send a Message</a>
           </div>
           <div class="win-nav"><button class="win-nav-btn" onclick="openWindow('win-landing')">&#8592; Back to Start</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mac-window" id="win-snake" style="left:220px; top:80px; width:248px; display:none;">
+      <div class="title-bar">
+        <div class="close-box" data-win="win-snake"></div>
+        <span class="win-title">Snake</span>
+        <div class="zoom-box"></div>
+      </div>
+      <div class="win-scroll" style="overflow:hidden;">
+        <div class="win-content" style="padding:12px 14px; display:flex; flex-direction:column; align-items:center; gap:8px;">
+          <canvas id="snake-canvas" width="200" height="200"
+            style="image-rendering:pixelated; border:1px solid #000; display:block; cursor:default;"></canvas>
+          <p style="font-size:9px; color:#888; text-align:center; line-height:1.6; font-family:var(--sys-font);">
+            ARROWS / WASD — click or press ENTER to start
+          </p>
         </div>
       </div>
     </div>
