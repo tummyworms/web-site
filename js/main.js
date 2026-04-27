@@ -233,9 +233,45 @@ document.addEventListener('click', () => {
 (function () {
   let cleanup = null;
 
-  function startSnake() {
-    if (cleanup) { cleanup(); cleanup = null; }
+  /* ── Leaderboard (localStorage) ── */
+  const LB_KEY = 'snake-lb';
+  const LB_MAX = 5;
 
+  function loadLB() {
+    try { return JSON.parse(localStorage.getItem(LB_KEY)) || []; } catch { return []; }
+  }
+  function saveLB(lb) { localStorage.setItem(LB_KEY, JSON.stringify(lb)); }
+
+  function qualifies(s) {
+    if (!s) return false;
+    const lb = loadLB();
+    return lb.length < LB_MAX || s > lb[lb.length - 1].score;
+  }
+
+  function addScore(name, s) {
+    const lb = loadLB();
+    lb.push({ name: (name.toUpperCase().trim() || 'ANON').substring(0, 10), score: s });
+    lb.sort((a, b) => b.score - a.score);
+    lb.splice(LB_MAX);
+    saveLB(lb);
+  }
+
+  function renderLB() {
+    const el = document.getElementById('snake-lb');
+    if (!el) return;
+    const lb = loadLB();
+    if (!lb.length) { el.innerHTML = '<span style="opacity:0.4">NO SCORES YET</span>'; return; }
+    el.innerHTML = lb.map((e, i) =>
+      `<div style="display:flex;gap:0;width:100%">` +
+        `<span style="opacity:0.4;width:22px">${String(i + 1).padStart(2, '0')}</span>` +
+        `<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.name}</span>` +
+        `<span>${String(e.score).padStart(4, '0')}</span>` +
+      `</div>`
+    ).join('');
+  }
+
+  /* ── Game ── */
+  function startSnake() {
     const canvas = document.getElementById('snake-canvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -247,14 +283,17 @@ document.addEventListener('click', () => {
     const H = canvas.height;
 
     let snake, dir, nextDir, food, score, alive, started;
+    let namePending = false, nameInput = '';
 
     function reset() {
-      snake    = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
-      dir      = {x:1, y:0};
-      nextDir  = {x:1, y:0};
-      score    = 0;
-      alive    = true;
-      started  = false;
+      snake      = [{x:10,y:10},{x:9,y:10},{x:8,y:10}];
+      dir        = {x:1, y:0};
+      nextDir    = {x:1, y:0};
+      score      = 0;
+      alive      = true;
+      started    = false;
+      namePending = false;
+      nameInput  = '';
       placeFood();
     }
 
@@ -264,27 +303,37 @@ document.addEventListener('click', () => {
       } while (snake.some(s => s.x === food.x && s.y === food.y));
     }
 
+    function overlay(lines) {
+      const lh = 14, pad = 10;
+      const bh = lines.length * lh + pad * 2;
+      ctx.fillStyle = 'rgba(255,255,255,0.95)';
+      ctx.fillRect(0, H/2 - bh/2, W, bh);
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(0, H/2 - bh/2, W, bh);
+      ctx.fillStyle = '#000';
+      ctx.textAlign = 'center';
+      lines.forEach((line, i) => ctx.fillText(line, W/2, H/2 - bh/2 + pad + lh * i + 10));
+      ctx.textAlign = 'left';
+      ctx.lineWidth = 1;
+    }
+
     function draw() {
-      // Background
       ctx.fillStyle = '#fff';
       ctx.fillRect(0, 0, W, H);
 
-      // Dot grid
       ctx.fillStyle = 'rgba(0,0,0,0.1)';
       for (let x = 0; x < COLS; x++)
         for (let y = 0; y < ROWS; y++)
           ctx.fillRect(x * CELL + 4, y * CELL + 4, 2, 2);
 
-      // Food
       ctx.fillStyle = '#000';
       ctx.fillRect(food.x * CELL + 2, food.y * CELL + 2, CELL - 4, CELL - 4);
 
-      // Snake
       snake.forEach((seg, i) => {
         ctx.fillStyle = '#000';
         ctx.fillRect(seg.x * CELL, seg.y * CELL, CELL - 1, CELL - 1);
         if (i === 0) {
-          // Eyes based on direction
           ctx.fillStyle = '#fff';
           if (dir.x === 1)  { ctx.fillRect(seg.x*CELL+6,seg.y*CELL+2,2,2); ctx.fillRect(seg.x*CELL+6,seg.y*CELL+6,2,2); }
           if (dir.x === -1) { ctx.fillRect(seg.x*CELL+1,seg.y*CELL+2,2,2); ctx.fillRect(seg.x*CELL+1,seg.y*CELL+6,2,2); }
@@ -293,40 +342,29 @@ document.addEventListener('click', () => {
         }
       });
 
-      // Score
       ctx.fillStyle = '#000';
       ctx.font = 'bold 9px Silkscreen, monospace';
       ctx.textAlign = 'left';
       ctx.fillText('SCORE ' + String(score).padStart(4, '0'), 3, H - 3);
 
-      // Overlay messages
-      function overlay(lines) {
-        const lh = 14, pad = 10;
-        const bh = lines.length * lh + pad * 2;
-        ctx.fillStyle = 'rgba(255,255,255,0.92)';
-        ctx.fillRect(0, H/2 - bh/2, W, bh);
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(0, H/2 - bh/2, W, bh);
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        lines.forEach((line, i) => ctx.fillText(line, W/2, H/2 - bh/2 + pad + lh * i + 10));
-        ctx.textAlign = 'left';
-        ctx.lineWidth = 1;
+      if (namePending) {
+        overlay(['NEW HIGH SCORE!', 'NAME: ' + nameInput + '_', 'ENTER TO SAVE']);
+      } else if (!started && alive) {
+        overlay(['CLICK TO START', 'ARROWS / WASD TO MOVE']);
+      } else if (!alive) {
+        overlay(['GAME OVER', 'SCORE: ' + score, 'CLICK TO PLAY AGAIN']);
       }
-
-      if (!started && alive) overlay(['CLICK TO START', 'ARROWS / WASD TO MOVE']);
-      if (!alive)            overlay(['GAME OVER', 'SCORE: ' + score, 'CLICK TO PLAY AGAIN']);
     }
 
     function step() {
-      if (!alive || !started) return;
+      if (!alive || !started || namePending) return;
       dir = { ...nextDir };
       const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
 
       if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS ||
           snake.some(s => s.x === head.x && s.y === head.y)) {
         alive = false;
+        if (qualifies(score)) { namePending = true; nameInput = ''; }
         draw();
         return;
       }
@@ -339,6 +377,16 @@ document.addEventListener('click', () => {
 
     const onKey = e => {
       if (document.getElementById('win-snake').style.display === 'none') return;
+
+      if (namePending) {
+        e.preventDefault();
+        if (e.key === 'Backspace') { nameInput = nameInput.slice(0, -1); draw(); return; }
+        if (e.key === 'Enter') { addScore(nameInput, score); renderLB(); namePending = false; draw(); return; }
+        if (e.key === 'Escape') { namePending = false; draw(); return; }
+        if (e.key.length === 1 && nameInput.length < 10) { nameInput += e.key.toUpperCase(); draw(); }
+        return;
+      }
+
       if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
       if (!started && (e.key === 'Enter' || e.key === ' ')) { started = true; draw(); return; }
       if (!alive) return;
@@ -349,19 +397,20 @@ document.addEventListener('click', () => {
     };
 
     canvas.addEventListener('click', () => {
+      if (namePending) return;
       if (!started) { started = true; draw(); }
       else if (!alive) { reset(); draw(); }
     });
 
-    // Touch swipe
     let tx = 0, ty = 0;
     canvas.addEventListener('touchstart', e => {
       tx = e.touches[0].clientX; ty = e.touches[0].clientY;
+      if (namePending) return;
       if (!started) { started = true; draw(); }
       else if (!alive) { reset(); draw(); }
     }, { passive: true });
     canvas.addEventListener('touchend', e => {
-      if (!alive) return;
+      if (!alive || namePending) return;
       const dx = e.changedTouches[0].clientX - tx;
       const dy = e.changedTouches[0].clientY - ty;
       if (Math.abs(dx) > Math.abs(dy)) {
@@ -381,12 +430,13 @@ document.addEventListener('click', () => {
     return () => { clearInterval(interval); document.removeEventListener('keydown', onKey); };
   }
 
-  // Watch the snake window's display style — start/stop game accordingly
+  /* ── Watch snake window visibility ── */
   const snakeWin = document.getElementById('win-snake');
   new MutationObserver(() => {
     const visible = snakeWin.style.display !== 'none';
     if (visible && !cleanup) {
       cleanup = startSnake();
+      renderLB();
     } else if (!visible && cleanup) {
       cleanup(); cleanup = null;
     }
