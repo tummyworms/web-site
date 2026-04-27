@@ -241,8 +241,8 @@ document.addEventListener('click', () => {
     const ctx = canvas.getContext('2d');
 
     const CELL = 10;
-    const COLS = canvas.width  / CELL;  // 20
-    const ROWS = canvas.height / CELL;  // 20
+    const COLS = canvas.width  / CELL;
+    const ROWS = canvas.height / CELL;
     const W = canvas.width;
     const H = canvas.height;
 
@@ -381,15 +381,14 @@ document.addEventListener('click', () => {
     return () => { clearInterval(interval); document.removeEventListener('keydown', onKey); };
   }
 
-  // Hook into openWindow for snake
-  const _openWindow = openWindow;
-  window.openWindow = function(id) {
-    _openWindow(id);
-    if (id === 'win-snake') cleanup = startSnake();
-  };
-
-  // Clean up on close
-  document.querySelector('#win-snake .close-box').addEventListener('click', () => {
-    if (cleanup) { cleanup(); cleanup = null; }
-  });
+  // Watch the snake window's display style — start/stop game accordingly
+  const snakeWin = document.getElementById('win-snake');
+  new MutationObserver(() => {
+    const visible = snakeWin.style.display !== 'none';
+    if (visible && !cleanup) {
+      cleanup = startSnake();
+    } else if (!visible && cleanup) {
+      cleanup(); cleanup = null;
+    }
+  }).observe(snakeWin, { attributes: true, attributeFilter: ['style'] });
 })();
