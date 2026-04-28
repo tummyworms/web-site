@@ -120,12 +120,16 @@ body {
 .menu-right { font-size: 11px; font-weight: 400; padding-right: 4px; }
 
 .apple-menu {
-  padding: 0 8px;
-  font-size: 14px;
+  padding: 0 6px;
   cursor: pointer;
-  line-height: var(--menu-h);
   display: flex;
   align-items: center;
+}
+
+.menu-logo {
+  height: 18px;
+  width: auto;
+  display: block;
 }
 
 .menu-item {
@@ -364,13 +368,13 @@ body {
 }
 
 .win-logo {
-  font-size: 40px;
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -2px;
+  line-height: 0;
 }
 
-.win-logo span { /* "of" in italic style */ }
+.win-logo img {
+  height: 80px;
+  width: auto;
+}
 
 .win-tagline {
   font-size: 10px;
@@ -552,7 +556,7 @@ body {
   .win-scroll { max-height: calc(75vh - 19px); }
 
   .win-content { padding: 10px 12px; }
-  .win-logo { font-size: 26px; letter-spacing: -1px; }
+  .win-logo img { height: 56px; }
   .win-tagline { font-size: 9px; letter-spacing: 2px; }
   .win-body { font-size: 10px; line-height: 1.6; }
   .win-heading { font-size: 11px; }
