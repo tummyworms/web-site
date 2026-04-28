@@ -90,8 +90,11 @@ body {
   left: 0; right: 0; bottom: 0;
   background-color: var(--white);
   background-image:
+    url("../images/logo.png"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2' height='2'%3E%3Crect x='0' y='0' width='1' height='1' fill='black'/%3E%3Crect x='1' y='1' width='1' height='1' fill='black'/%3E%3C/svg%3E");
-  background-size: 2px 2px;
+  background-size: 220px auto, 2px 2px;
+  background-position: center center, 0 0;
+  background-repeat: no-repeat, repeat;
   overflow: hidden;
 }
 
